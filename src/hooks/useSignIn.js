@@ -6,6 +6,7 @@ const useSignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState(null);
 
   const { setIsLoggedIn } = useUserContext();
 
@@ -25,26 +26,33 @@ const useSignIn = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    console.log('Sign in with:', email, password, rememberMe);
 
-    const response = await fetch('https://dummy-api/signin', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    try {
+      const response = await fetch('https://dummy-api/signin', {
+        method: 'POST',
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    const json = await response.json();
+      const json = await response.json();
 
-    if (json.loggedIn) {
-      setIsLoggedIn(true);
+      setError('logged in')
 
-      navigate('/');
+      if (json.loggedIn) {
+        setIsLoggedIn(true);
 
-      if (rememberMe) {
-        localStorage.setItem('loggedIn', 'true');
+        navigate('/');
+
+        if (rememberMe) {
+          localStorage.setItem('loggedIn', 'true');
+        }
+      } else {
+        setError(json.message);
       }
+    } catch {
+      setError('Something went wrong, please try again later');
     }
   };
 
@@ -56,6 +64,7 @@ const useSignIn = () => {
     rememberMe,
     handleRememberMeChange,
     handleSignIn,
+    error,
   };
 };
 
