@@ -38,8 +38,6 @@ const useSignIn = () => {
 
       const json = await response.json();
 
-      setError('logged in')
-
       if (json.loggedIn) {
         setIsLoggedIn(true);
 
